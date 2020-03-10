@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Hidden=false
+Terminal=true
+Name=Display IP Address on the LCD Display
+Comment=Displays the Raspberry Pi's IP address on startup
+Exec=python3 /home/pi/.config/autostart/displayIpAddress.py
+X-KeepTerminal=true
+Name[de_DE]=Display IP Address LCD Display

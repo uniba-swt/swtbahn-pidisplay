@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Hidden=false
+Terminal=true
+Name=Display IP Address on the E-Paper
+Comment=Displays the Raspberry Pi's IP address on startup
+Exec=python3 /home/pi/.config/autostart/displayIPAddress.py
+X-KeepTerminal=true
+Name[de_DE]=Display IP Address E-Paper

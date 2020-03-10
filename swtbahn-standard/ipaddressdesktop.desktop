@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Hidden=false
+Terminal=true
+Name=Display IP Address on the Desktop
+Comment=Displays the Raspberry Pi's IP address on startup
+Exec=/home/pi/.config/autostart/ipaddress.sh
+X-KeepTerminal=true
+Name[de_DE]=Display IP Address Desktop

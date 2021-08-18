@@ -3,3 +3,6 @@ The Raspberry Pi on an SWTbahn platform is intended to be run without a monitor,
 *  SWTbahn Lite: [Waveshare 2.13 inch e-paper HAT (version 1)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT)
 *  SWTbahn Standard: [Waveshare 2.13 inch e-paper HAT (version 2)](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT)
 *  SWTbahn Full: [Display-o-Tron HAT](https://github.com/pimoroni/displayotron)
+
+# Waveshare Dependencies
+See the Waveshare documentation on installing the Python libraries: https://www.waveshare.com/wiki/Template:Raspberry_Pi_Guides_for_SPI_e-Paper

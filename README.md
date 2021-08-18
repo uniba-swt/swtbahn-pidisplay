@@ -5,4 +5,6 @@ The Raspberry Pi on an SWTbahn platform is intended to be run without a monitor,
 *  SWTbahn Full: [Display-o-Tron HAT](https://github.com/pimoroni/displayotron)
 
 # Waveshare Dependencies
-See the Waveshare documentation on installing the Python libraries: https://www.waveshare.com/wiki/Template:Raspberry_Pi_Guides_for_SPI_e-Paper
+See the Waveshare documentation on installing the Python libraries: 
+*  [Website](https://www.waveshare.com/wiki/Template:Raspberry_Pi_Guides_for_SPI_e-Paper)
+*  [PDF copy](https://github.com/uniba-swt/swtbahn-pidisplay/blob/master/Waveshare-Documentation.pdf)

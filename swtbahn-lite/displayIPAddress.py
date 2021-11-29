@@ -23,9 +23,9 @@ try:
 	font24 = ImageFont.truetype('/usr/share/fonts/truetype/freefont/FreeMono.ttf', 24)
 	fontbold24 = ImageFont.truetype('/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf', 24)
 		
-	# Waiting for IP-Address
+	# Wait for IP address
 	while not tryGetIPAddress():
-		# Drawing warning
+		# Draw warning
 		date_time = str(datetime.datetime.now())[:19] 
 		image = Image.new('1', (epd2in13.EPD_HEIGHT, epd2in13.EPD_WIDTH), 255)  # 255: clear the frame
 		draw = ImageDraw.Draw(image)
@@ -37,12 +37,12 @@ try:
 		epd.sleep()
 		time.sleep(10)
 
-	# Collect informations
+	# Collect information
 	host_name = socket.gethostname() 
 	host_ip = tryGetIPAddress()
 	date_time = str(datetime.datetime.now())[:19] 
 
-	# Drawing informations on diplay
+	# Draw information on display
 	try:
 		image = Image.open('/home/pi/.config/autostart/train.bmp') 
 	except:
@@ -56,6 +56,6 @@ try:
 	epd.sleep()
         
 except:
-	print( 'traceback.format_exc():\n%s',traceback.format_exc())
+	print('traceback.format_exc():\n%s',traceback.format_exc())
 	exit()
 

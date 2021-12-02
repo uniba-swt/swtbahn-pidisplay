@@ -21,7 +21,7 @@ try:
 	if not tryGetIPAddress():
 		# Draw warning
 		lcd.set_cursor_position(0,0)
-		lcd.write("No IP-Address")
+		lcd.write("No IP address")
 	while not tryGetIPAddress():
 		time.sleep(10)
 

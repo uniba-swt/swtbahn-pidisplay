@@ -10,14 +10,32 @@ import dothat.lcd as lcd
 import dothat.touch as touch
 import dothat.backlight as backlight
 
+
+# Helper functions
+
 def tryGetIPAddress():
 	try:
 		return socket.gethostbyname(socket.gethostname() + ".local")
 	except:
 		return 0
 
+def blinkLed():
+	backlight.graph_set_led_duty(0, 1)
+	
+	while (True):
+		backlight.graph_set_led_state(0, 1)
+		time.sleep(0.5)
+		backlight.graph_set_led_state(0, 0)
+		time.sleep(0.5)
+
+@touch.on(touch.CANCEL)
+def handle_quit(channel, event):
+	backlight.off()
+	global running
+	running = False
+
 @touch.on(touch.BUTTON)
-def handle_left(channel, event):
+def handle_shutdown(channel, event):
 	lcd.clear()
 	backlight.rgb(255, 0, 0)
 	lcd.set_cursor_position(1, 1)
@@ -27,24 +45,28 @@ def handle_left(channel, event):
 	running = False
 	os.system("shutdown now")
 
+
+# Main logic below
+
 running = True
 
 try:
-	lcd.clear()
+	backlight.graph_off()
 	lcd.set_contrast(50)
 
 	
 	while (running):
+		lcd.clear()
+
 		# Wait for IP-Address
 		if not tryGetIPAddress():
 			# Draw warning
-			backlight.rgb(0, 255, 255)
-	
+			backlight.rgb(255, 255, 0)
+			
 			lcd.set_cursor_position(0, 0)
 			lcd.write("No IP address")
 		else:
-			backlight.rgb(255, 255, 220)
-			backlight.single_rgb(0, 255, 0, 0)
+			backlight.rgb(230, 255, 255)
 			
 			# Collect information
 			host_name = socket.gethostname() 
@@ -52,7 +74,6 @@ try:
 			date_time = str(datetime.datetime.now())[:16] 
 			
 			# Display IP information
-			lcd.clear()
 			lcd.set_cursor_position(0,0)
 			lcd.write(host_name)
 			lcd.set_cursor_position(0,1)

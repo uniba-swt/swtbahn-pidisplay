@@ -37,7 +37,7 @@ def handle_quit(channel, event):
 @touch.on(touch.BUTTON)
 def handle_shutdown(channel, event):
 	lcd.clear()
-	backlight.rgb(255, 0, 0)
+	backlight.rgb(170, 0, 0)
 	lcd.set_cursor_position(1, 1)
 	lcd.write("Shutting Down!")
 	
@@ -61,12 +61,12 @@ try:
 		# Wait for IP-Address
 		if not tryGetIPAddress():
 			# Draw warning
-			backlight.rgb(255, 255, 0)
+			backlight.rgb(170, 170, 0)
 			
 			lcd.set_cursor_position(0, 0)
 			lcd.write("No IP address")
 		else:
-			backlight.rgb(230, 255, 255)
+			backlight.rgb(140, 170, 170)
 			
 			# Collect information
 			host_name = socket.gethostname() 

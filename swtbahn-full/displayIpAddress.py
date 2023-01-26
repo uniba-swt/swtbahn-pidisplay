@@ -5,6 +5,8 @@ import traceback
 import socket
 import datetime
 import os
+import ifaddr
+
 
 import dothat.lcd as lcd
 import dothat.touch as touch
@@ -15,7 +17,7 @@ import dothat.backlight as backlight
 
 def tryGetIPAddress():
 	try:
-		return socket.gethostbyname(socket.gethostname() + ".local")
+		return 
 	except:
 		return 0
 
@@ -34,6 +36,19 @@ def handle_quit(channel, event):
 	global running
 	running = False
 
+max_len = 0
+counter = 0
+@touch.on(touch.NEXT)
+def changeInterface():
+	global max_len, counter
+	if counter is max_len:
+		counter = 0
+	else:
+		counter += 1
+	
+
+
+
 @touch.on(touch.BUTTON)
 def handle_shutdown(channel, event):
 	lcd.clear()
@@ -49,7 +64,6 @@ def handle_shutdown(channel, event):
 # Main logic below
 
 running = True
-
 try:
 	backlight.graph_off()
 	lcd.set_contrast(50)
@@ -69,8 +83,16 @@ try:
 			backlight.rgb(140, 170, 170)
 			
 			# Collect information
-			host_name = socket.gethostname() 
-			host_ip = tryGetIPAddress()
+			adapters = ifaddr.get_adapters()
+			ipCollection = []
+			for adapter in adapters:
+				for ip in adapter.ips:
+					ipCollection.append([ip, adapter.nice_name])
+			max_len = len(ipCollection)
+			host_name = ipCollection[counter][1]
+			host_ip = ipCollection[counter][0]
+			
+
 			date_time = str(datetime.datetime.now())[:16] 
 			
 			# Display IP information

@@ -2,7 +2,7 @@
 Type=Application
 Hidden=false
 Terminal=true
-Name=Display IP Address
-Comment=Displays the Raspberry Pi's IP address on startup
+Name=Display IP Addresses
+Comment=Displays the Raspberry Pi's IP addresses on startup
 Exec=/home/pi/.config/autostart/ipaddress.sh
 X-KeepTerminal=true

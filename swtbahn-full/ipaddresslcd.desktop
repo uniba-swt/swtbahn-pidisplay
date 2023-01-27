@@ -2,8 +2,8 @@
 Type=Application
 Hidden=false
 Terminal=true
-Name=Display IP Address on the LCD Display
-Comment=Displays the Raspberry Pi's IP address on startup
+Name=Display IP Addresses on the LCD Display
+Comment=Displays the Raspberry Pi's IP addresses on startup
 Exec=python3 /home/pi/.config/autostart/displayIpAddress.py
 X-KeepTerminal=true
-Name[de_DE]=Display IP Address LCD Display
+Name[de_DE]=IP Addresses LCD Display

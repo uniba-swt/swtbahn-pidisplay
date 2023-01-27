@@ -1,6 +1,5 @@
 import time
 import traceback
-import socket
 import datetime
 import os
 import ifaddr
@@ -10,6 +9,42 @@ import dothat.lcd as lcd
 import dothat.touch as touch
 import dothat.backlight as backlight
 
+counter = 0
+
+def updateDisplay():
+	global counter
+	lcd.clear()
+	host_ip = None
+
+	# Wait for IP-Address
+	if host_ip is None:
+		# Draw warning
+		backlight.rgb(170, 170, 0)
+		
+		lcd.set_cursor_position(0, 0)
+		lcd.write("No IP address")
+#		else:
+	backlight.rgb(140, 170, 170)
+	# Collect information
+	adapters = ifaddr.get_adapters()
+	ipCollection = []
+	for adapter in adapters:
+		ipCollection.append([adapter.ips[0].ip, adapter.nice_name])
+
+	host_name = None
+	if counter >= len(ipCollection):
+		counter = 0
+	if len(ipCollection) > 0:
+		host_name = ipCollection[counter][1]
+		host_ip = str(ipCollection[counter][0])
+	date_time = str(datetime.datetime.now())[:16] 
+		# Display IP information
+	lcd.set_cursor_position(0,0)
+	lcd.write(host_name)
+	lcd.set_cursor_position(0,1)
+	lcd.write(host_ip)
+	lcd.set_cursor_position(0,2)
+	lcd.write(date_time)
 
 # Helper functions
 def blinkLed():
@@ -27,16 +62,11 @@ def handle_quit(channel, event):
 	global running
 	running = False
 
-max_len = 0
-counter = 0
 @touch.on(touch.UP)
 def changeInterface(channel, event):
-	global max_len, counter
-	print("change interface from {} to {}".format(counter, counter+1))
-	if counter is max_len:
-		counter = 0
-	else:
-		counter += 1
+	global counter
+	counter += 1
+	updateDisplay()
 	
 
 
@@ -62,43 +92,8 @@ try:
 
 	
 	while (running):
-		lcd.clear()
-		host_ip = None
-
-		# Wait for IP-Address
-		if host_ip is None:
-			# Draw warning
-			backlight.rgb(170, 170, 0)
-			
-			lcd.set_cursor_position(0, 0)
-			lcd.write("No IP address")
-#		else:
-		backlight.rgb(140, 170, 170)
-		print("Get adapters")
-		# Collect information
-		adapters = ifaddr.get_adapters()
-		ipCollection = []
-		for adapter in adapters:
-			ipCollection.append([adapter.ips[0].ip, adapter.nice_name])
-
-		max_len = len(ipCollection)
-		host_name = None
-		if counter >= len(ipCollection):
-			counter = 0
-		if len(ipCollection) > 0:
-			host_name = ipCollection[counter][1]
-			host_ip = str(ipCollection[counter][0])
-		date_time = str(datetime.datetime.now())[:16] 
-		print(host_ip)
-		print(counter)
-			# Display IP information
-		lcd.set_cursor_position(0,0)
-		lcd.write(host_name)
-		lcd.set_cursor_position(0,1)
-		lcd.write(host_ip)
-		lcd.set_cursor_position(0,2)
-		lcd.write(date_time)
-			
+		
+		updateDisplay()
 		time.sleep(10)
         
 except:

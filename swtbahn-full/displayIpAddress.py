@@ -14,13 +14,6 @@ import dothat.backlight as backlight
 
 
 # Helper functions
-
-def tryGetIPAddress():
-	try:
-		return 
-	except:
-		return 0
-
 def blinkLed():
 	backlight.graph_set_led_duty(0, 1)
 	
@@ -71,9 +64,10 @@ try:
 	
 	while (running):
 		lcd.clear()
+		host_ip = None
 
 		# Wait for IP-Address
-		if not tryGetIPAddress():
+		if host_ip is None:
 			# Draw warning
 			backlight.rgb(170, 170, 0)
 			
@@ -89,10 +83,10 @@ try:
 				for ip in adapter.ips:
 					ipCollection.append([ip, adapter.nice_name])
 			max_len = len(ipCollection)
-			host_name = ipCollection[counter][1]
-			host_ip = ipCollection[counter][0]
-			
-
+			host_name = None
+			if len(ipCollection) > 0:
+				host_name = ipCollection[counter][1]
+				host_ip = ipCollection[counter][0]
 			date_time = str(datetime.datetime.now())[:16] 
 			
 			# Display IP information

@@ -9,42 +9,46 @@ import dothat.lcd as lcd
 import dothat.touch as touch
 import dothat.backlight as backlight
 
-counter = 0
+networkInterfaceIndex = 0
 
 def updateDisplay():
-	global counter
+	global networkInterfaceIndex
 	lcd.clear()
 	host_ip = None
 
-	# Wait for IP-Address
-	if host_ip is None:
-		# Draw warning
-		backlight.rgb(170, 170, 0)
-		
-		lcd.set_cursor_position(0, 0)
-		lcd.write("No IP address")
 #		else:
 	backlight.rgb(140, 170, 170)
 	# Collect information
 	adapters = ifaddr.get_adapters()
 	ipCollection = []
+
 	for adapter in adapters:
 		ipCollection.append([adapter.ips[0].ip, adapter.nice_name])
 
 	host_name = None
-	if counter >= len(ipCollection):
-		counter = 0
+	# Validating the networkInterfaceIndex in Range of IPs
+	if networkInterfaceIndex >= len(ipCollection):
+		networkInterfaceIndex = 0
 	if len(ipCollection) > 0:
-		host_name = ipCollection[counter][1]
-		host_ip = str(ipCollection[counter][0])
+		host_name = ipCollection[networkInterfaceIndex][1]
+		host_ip = str(ipCollection[networkInterfaceIndex][0])
 	date_time = str(datetime.datetime.now())[:16] 
-		# Display IP information
-	lcd.set_cursor_position(0,0)
-	lcd.write(host_name)
-	lcd.set_cursor_position(0,1)
-	lcd.write(host_ip)
-	lcd.set_cursor_position(0,2)
-	lcd.write(date_time)
+
+	if host_ip is None:
+		# When no ip is found
+		backlight.rgb(170, 170, 0)
+		
+		lcd.set_cursor_position(0, 0)
+		lcd.write("No IP address")
+
+	else:
+		# Write Ip Information
+		lcd.set_cursor_position(0,0)
+		lcd.write(host_name)
+		lcd.set_cursor_position(0,1)
+		lcd.write(host_ip)
+		lcd.set_cursor_position(0,2)
+		lcd.write(date_time)
 
 # Helper functions
 def blinkLed():
@@ -64,8 +68,8 @@ def handle_quit(channel, event):
 
 @touch.on(touch.UP)
 def changeInterface(channel, event):
-	global counter
-	counter += 1
+	global networkInterfaceIndex
+	networkInterfaceIndex += 1
 	updateDisplay()
 	
 

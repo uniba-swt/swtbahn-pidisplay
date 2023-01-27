@@ -14,25 +14,27 @@ networkInterfaceIndex = 0
 def updateDisplay():
 	global networkInterfaceIndex
 	lcd.clear()
-	host_ip = None
 
-#		else:
-	backlight.rgb(140, 170, 170)
+
 	# Collect information
 	adapters = ifaddr.get_adapters()
 	ipCollection = []
 
 	for adapter in adapters:
 		ipCollection.append([adapter.ips[0].ip, adapter.nice_name])
-
+	
+	# Definition of Vars #+defho
+		
+	host_ip = None
 	host_name = None
+	date_time = str(datetime.datetime.now())[:16] 
 	# Validating the networkInterfaceIndex in Range of IPs
 	if networkInterfaceIndex >= len(ipCollection):
 		networkInterfaceIndex = 0
+
 	if len(ipCollection) > 0:
 		host_name = ipCollection[networkInterfaceIndex][1]
 		host_ip = str(ipCollection[networkInterfaceIndex][0])
-	date_time = str(datetime.datetime.now())[:16] 
 
 	if host_ip is None:
 		# When no ip is found
@@ -42,6 +44,8 @@ def updateDisplay():
 		lcd.write("No IP address")
 
 	else:
+		backlight.rgb(140, 170, 170)
+
 		# Write Ip Information
 		lcd.set_cursor_position(0,0)
 		lcd.write(host_name)
@@ -71,9 +75,6 @@ def changeInterface(channel, event):
 	global networkInterfaceIndex
 	networkInterfaceIndex += 1
 	updateDisplay()
-	
-
-
 
 @touch.on(touch.BUTTON)
 def handle_shutdown(channel, event):
@@ -86,9 +87,7 @@ def handle_shutdown(channel, event):
 	running = False
 	os.system("shutdown now")
 
-
 # Main logic below
-
 running = True
 try:
 	backlight.graph_off()
@@ -96,11 +95,9 @@ try:
 
 	
 	while (running):
-		
 		updateDisplay()
 		time.sleep(10)
         
 except:
 	print('traceback.format_exc():\n%s',traceback.format_exc())
 	exit()
-

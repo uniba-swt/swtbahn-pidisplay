@@ -76,6 +76,16 @@ def changeInterface(channel, event):
 	networkInterfaceIndex += 1
 	updateDisplay()
 
+@touch.on(touch.DOWN)
+def switchToEduroam(channel, event):
+	os.system("sudo service hostapd stop")
+	os.system("sudo service dnsmasq stop")
+	os.system("sudo service raspapd stop")
+	time.sleep(2)
+	os.system("sudo wpa_supplicant -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf -B")
+	os.system("sudo dhclient wlan0")
+
+
 @touch.on(touch.BUTTON)
 def handle_shutdown(channel, event):
 	lcd.clear()

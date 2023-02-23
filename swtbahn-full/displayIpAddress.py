@@ -10,6 +10,7 @@ import dothat.touch as touch
 import dothat.backlight as backlight
 
 networkInterfaceIndex = 0
+doNotRefreshDisplay = False
 
 def updateDisplay():
 	global networkInterfaceIndex
@@ -78,13 +79,19 @@ def changeInterface(channel, event):
 
 @touch.on(touch.DOWN)
 def switchToEduroam(channel, event):
+	global doNotRefreshDisplay
+	doNotRefreshDisplay = True
+	lcd.clear()
+	lcd.write("Changing Wifi Mode")
+	os.system("sudo systemctl daemon-reload")
 	os.system("sudo service hostapd stop")
 	os.system("sudo service dnsmasq stop")
 	os.system("sudo service raspapd stop")
 	time.sleep(2)
 	os.system("sudo wpa_supplicant -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf -B")
 	os.system("sudo dhclient wlan0")
-
+	doNotRefreshDisplay = False
+	updateDisplay()
 
 @touch.on(touch.BUTTON)
 def handle_shutdown(channel, event):
@@ -105,7 +112,8 @@ try:
 
 	
 	while (running):
-		updateDisplay()
+		if not doNotRefreshDisplay:
+			updateDisplay()
 		time.sleep(10)
         
 except:

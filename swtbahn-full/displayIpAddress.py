@@ -82,7 +82,9 @@ def switchToEduroam(channel, event):
 	global doNotRefreshDisplay
 	doNotRefreshDisplay = True
 	lcd.clear()
-	lcd.write("Changing Wifi Mode")
+	lcd.write("Switching to")
+	lcd.set_cursor_position(0,1)
+	lcd.write("Eduroam mode")
 	os.system("sudo systemctl daemon-reload")
 	os.system("sudo service hostapd stop")
 	os.system("sudo service dnsmasq stop")

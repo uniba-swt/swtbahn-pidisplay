@@ -11,9 +11,26 @@ import dothat.backlight as backlight
 
 networkInterfaceIndex = 0
 doNotRefreshDisplay = False
+APisOnline = True
+APIP = None
+EduroamIP = None
+def scanWifiIP(ipCollection):
+	global APIP, EduroamIP
+	for ipString in ipCollection[wlan0]:
+		if ("." in ipString):
+			elements_array = ipString.strip().split(".")
+			if(len(elements_array) == 4):
+				for i in elements_array:
+					if (i.isnumeric() and int(i)>=0 and int(i)<=255):
+						if ipString[0:2] == "10.":
+							APIP = ipString
+						else:
+							EduroamIP = ipString
+
+
 
 def updateDisplay():
-	global networkInterfaceIndex
+	global networkInterfaceIndex, APIP, APisOnline, EduroamIP
 	lcd.clear()
 
 
@@ -34,8 +51,16 @@ def updateDisplay():
 		networkInterfaceIndex = 0
 
 	if len(ipCollection) > 0:
+		host_ip = None
 		host_name = ipCollection[networkInterfaceIndex][1]
-		host_ip = str(ipCollection[networkInterfaceIndex][0])
+		if networkInterfaceIndex == "wlan0":
+			scanWifiIP(ipCollection)
+			if APisOnline:
+				host_ip = APIP
+			else:
+				host_ip = EduroamIP
+		else:
+			host_ip = str(ipCollection[networkInterfaceIndex][0])
 
 	if host_ip is None:
 		# When no ip is found
@@ -79,10 +104,12 @@ def changeInterface(channel, event):
 
 @touch.on(touch.DOWN)
 def switchToEduroam(channel, event):
-	global doNotRefreshDisplay
+	global doNotRefreshDisplay, APisOnline
 	doNotRefreshDisplay = True
 	lcd.clear()
-	lcd.write("Changing Wifi Mode")
+	lcd.write("Switching to")
+	lcd.set_cursor_position(0,1)
+	lcd.write("Eduroam mode")
 	os.system("sudo systemctl daemon-reload")
 	os.system("sudo service hostapd stop")
 	os.system("sudo service dnsmasq stop")
@@ -91,6 +118,7 @@ def switchToEduroam(channel, event):
 	os.system("sudo wpa_supplicant -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf -B")
 	os.system("sudo dhclient wlan0")
 	doNotRefreshDisplay = False
+	APisOnline = False
 	updateDisplay()
 
 @touch.on(touch.BUTTON)

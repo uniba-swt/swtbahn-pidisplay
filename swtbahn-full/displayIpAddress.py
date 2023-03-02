@@ -3,6 +3,7 @@ import traceback
 import datetime
 import os
 import ifaddr
+from ipaddress import ip_address, IPv4Address
 
 
 import dothat.lcd as lcd
@@ -11,26 +12,22 @@ import dothat.backlight as backlight
 
 networkInterfaceIndex = 0
 doNotRefreshDisplay = False
-APisOnline = True
-APIP = None
-EduroamIP = None
+apIsOnline = True
+apIp = None
+eduroamIp = None
 def scanWifiIP(ipCollection):
-	global APIP, EduroamIP
+	global apIp, eduroamIp
 	for ipString in ipCollection[wlan0]:
-		if ("." in ipString):
-			elements_array = ipString.strip().split(".")
-			if(len(elements_array) == 4):
-				for i in elements_array:
-					if (i.isnumeric() and int(i)>=0 and int(i)<=255):
-						if ipString[0:2] == "10.":
-							APIP = ipString
-						else:
-							EduroamIP = ipString
+		if type(ip_address(ipString) is IPv4Address):
+			if ipString[0:2] == "10.":
+				apIp = ipString
+			else:
+				eduroamIp = ipString
 
 
 
 def updateDisplay():
-	global networkInterfaceIndex, APIP, APisOnline, EduroamIP
+	global networkInterfaceIndex, apIp, apIsOnline, eduroamIp
 	lcd.clear()
 
 
@@ -51,14 +48,13 @@ def updateDisplay():
 		networkInterfaceIndex = 0
 
 	if len(ipCollection) > 0:
-		host_ip = None
 		host_name = ipCollection[networkInterfaceIndex][1]
 		if networkInterfaceIndex == "wlan0":
 			scanWifiIP(ipCollection)
-			if APisOnline:
-				host_ip = APIP
+			if apIsOnline:
+				host_ip = apIp
 			else:
-				host_ip = EduroamIP
+				host_ip = eduroamIp
 		else:
 			host_ip = str(ipCollection[networkInterfaceIndex][0])
 
@@ -104,7 +100,7 @@ def changeInterface(channel, event):
 
 @touch.on(touch.DOWN)
 def switchToEduroam(channel, event):
-	global doNotRefreshDisplay, APisOnline
+	global doNotRefreshDisplay, apIsOnline
 	doNotRefreshDisplay = True
 	lcd.clear()
 	lcd.write("Switching to")
@@ -118,7 +114,7 @@ def switchToEduroam(channel, event):
 	os.system("sudo wpa_supplicant -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf -B")
 	os.system("sudo dhclient wlan0")
 	doNotRefreshDisplay = False
-	APisOnline = False
+	apIsOnline = False
 	updateDisplay()
 
 @touch.on(touch.BUTTON)

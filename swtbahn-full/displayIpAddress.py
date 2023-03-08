@@ -3,7 +3,6 @@ import traceback
 import datetime
 import os
 import ifaddr
-from ipaddress import ip_address, IPv4Address
 
 import dothat.lcd as lcd
 import dothat.touch as touch
@@ -12,23 +11,11 @@ import dothat.backlight as backlight
 
 networkInterfaceIndex = 0
 doNotRefreshDisplay = False
-apIsOnline = True
-apIp = None
-eduroamIp = None
-def scanWifiIP(ipCollection):
-	global apIp, eduroamIp
-	for ipString in ipCollection[wlan0]:
-		if type(ip_address(ipString) is IPv4Address):
-			if ipString[0:2] == "10.":
-				apIp = ipString
-			else:
-				eduroamIp = ipString
-
 
 
 # Helper functions
 def updateDisplay():
-	global networkInterfaceIndex, apIp, apIsOnline, eduroamIp
+	global networkInterfaceIndex
 	lcd.clear()
 
 	# Collect IP information
@@ -39,22 +26,16 @@ def updateDisplay():
 		ipCollection.append([adapter.ips[0].ip, adapter.nice_name])
 
 	# Restrict networkInterfaceIndex to the range of available IPs
-	global networkInterfaceIndex
 	if networkInterfaceIndex >= len(ipCollection):
 		networkInterfaceIndex = 0
-
+	print(networkInterfaceIndex)
+	print(ipCollection)
+	print(networkInterfaceIndex == "wlan0")
 	host_ip = None
 	host_name = None
 	if len(ipCollection) > 0:
 		host_name = ipCollection[networkInterfaceIndex][1]
-		if networkInterfaceIndex == "wlan0":
-			scanWifiIP(ipCollection)
-			if apIsOnline:
-				host_ip = apIp
-			else:
-				host_ip = eduroamIp
-		else:
-			host_ip = str(ipCollection[networkInterfaceIndex][0])
+		host_ip = str(ipCollection[networkInterfaceIndex][0])
 
 	if host_ip is None:
 		# No IP found
@@ -99,7 +80,7 @@ def changeInterface(channel, event):
 
 @touch.on(touch.DOWN)
 def switchToEduroam(channel, event):
-	global doNotRefreshDisplay, apIsOnline
+	global doNotRefreshDisplay
 	doNotRefreshDisplay = True
 	lcd.clear()
 	lcd.write("Switching to")
@@ -113,7 +94,6 @@ def switchToEduroam(channel, event):
 	os.system("sudo wpa_supplicant -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf -B")
 	os.system("sudo dhclient wlan0")
 	doNotRefreshDisplay = False
-	apIsOnline = False
 	updateDisplay()
 
 @touch.on(touch.BUTTON)

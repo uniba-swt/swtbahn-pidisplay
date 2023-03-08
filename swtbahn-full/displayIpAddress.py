@@ -28,9 +28,6 @@ def updateDisplay():
 	# Restrict networkInterfaceIndex to the range of available IPs
 	if networkInterfaceIndex >= len(ipCollection):
 		networkInterfaceIndex = 0
-	print(networkInterfaceIndex)
-	print(ipCollection)
-	print(networkInterfaceIndex == "wlan0")
 	host_ip = None
 	host_name = None
 	if len(ipCollection) > 0:

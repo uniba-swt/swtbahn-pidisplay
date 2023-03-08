@@ -10,9 +10,12 @@ import dothat.backlight as backlight
 
 
 networkInterfaceIndex = 0
+doNotRefreshDisplay = False
+
 
 # Helper functions
 def updateDisplay():
+	global networkInterfaceIndex
 	lcd.clear()
 
 	# Collect IP information
@@ -23,15 +26,13 @@ def updateDisplay():
 		ipCollection.append([adapter.ips[0].ip, adapter.nice_name])
 
 	# Restrict networkInterfaceIndex to the range of available IPs
-	global networkInterfaceIndex
 	if networkInterfaceIndex >= len(ipCollection):
 		networkInterfaceIndex = 0
-
 	host_ip = None
 	host_name = None
 	if len(ipCollection) > 0:
-		host_ip = str(ipCollection[networkInterfaceIndex][0])
 		host_name = ipCollection[networkInterfaceIndex][1]
+		host_ip = str(ipCollection[networkInterfaceIndex][0])
 
 	if host_ip is None:
 		# No IP found
@@ -74,6 +75,24 @@ def changeInterface(channel, event):
 	networkInterfaceIndex += 1
 	updateDisplay()
 
+@touch.on(touch.DOWN)
+def switchToEduroam(channel, event):
+	global doNotRefreshDisplay
+	doNotRefreshDisplay = True
+	lcd.clear()
+	lcd.write("Switching to")
+	lcd.set_cursor_position(0,1)
+	lcd.write("Eduroam mode")
+	os.system("sudo systemctl daemon-reload")
+	os.system("sudo service hostapd stop")
+	os.system("sudo service dnsmasq stop")
+	os.system("sudo service raspapd stop")
+	time.sleep(2)
+	os.system("sudo wpa_supplicant -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf -B")
+	os.system("sudo dhclient wlan0")
+	doNotRefreshDisplay = False
+	updateDisplay()
+
 @touch.on(touch.BUTTON)
 def handle_shutdown(channel, event):
 	lcd.clear()
@@ -92,7 +111,8 @@ try:
 	lcd.set_contrast(50)
 
 	while (running):
-		updateDisplay()
+		if not doNotRefreshDisplay:
+			updateDisplay()
 		time.sleep(10)
         
 except:

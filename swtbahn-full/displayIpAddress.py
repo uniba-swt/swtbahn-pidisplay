@@ -1,8 +1,10 @@
+#!/usr/bin/python3
 import time
 import traceback
 import datetime
 import os
 import ifaddr
+import signal
 
 import dothat.lcd as lcd
 import dothat.touch as touch
@@ -10,12 +12,11 @@ import dothat.backlight as backlight
 
 
 networkInterfaceIndex = 0
-doNotRefreshDisplay = False
+refreshDisplay = True
 
 
 # Helper functions
 def updateDisplay():
-	global networkInterfaceIndex
 	lcd.clear()
 
 	# Collect IP information
@@ -26,6 +27,7 @@ def updateDisplay():
 		ipCollection.append([adapter.ips[0].ip, adapter.nice_name])
 
 	# Restrict networkInterfaceIndex to the range of available IPs
+	global networkInterfaceIndex
 	if networkInterfaceIndex >= len(ipCollection):
 		networkInterfaceIndex = 0
 	host_ip = None
@@ -56,7 +58,7 @@ def updateDisplay():
 def blinkLed():
 	backlight.graph_set_led_duty(0, 1)
 	
-	while (True):
+	while True:
 		backlight.graph_set_led_state(0, 1)
 		time.sleep(0.5)
 		backlight.graph_set_led_state(0, 0)
@@ -66,8 +68,8 @@ def blinkLed():
 @touch.on(touch.CANCEL)
 def handle_quit(channel, event):
 	backlight.off()
-	global running
-	running = False
+	os.kill(os.getpid(), signal.SIGKILL)
+
 
 @touch.on(touch.UP)
 def changeInterface(channel, event):
@@ -77,8 +79,8 @@ def changeInterface(channel, event):
 
 @touch.on(touch.DOWN)
 def switchToEduroam(channel, event):
-	global doNotRefreshDisplay
-	doNotRefreshDisplay = True
+	global refreshDisplay
+	refreshDisplay = False
 	lcd.clear()
 	lcd.write("Switching to")
 	lcd.set_cursor_position(0,1)
@@ -90,7 +92,7 @@ def switchToEduroam(channel, event):
 	time.sleep(2)
 	os.system("sudo wpa_supplicant -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf -B")
 	os.system("sudo dhclient wlan0")
-	doNotRefreshDisplay = False
+	RefreshDisplay = True
 	updateDisplay()
 
 @touch.on(touch.BUTTON)
@@ -99,22 +101,21 @@ def handle_shutdown(channel, event):
 	backlight.rgb(170, 0, 0)
 	lcd.set_cursor_position(1, 1)
 	lcd.write("Shutting Down!")
-	
-	global running
-	running = False
-	os.system("shutdown now")
+	os.system("sudo shutdown now")
 
 # Main logic below
-running = True
-try:
-	backlight.graph_off()
-	lcd.set_contrast(50)
+def main():
+	try:
+		backlight.graph_off()
+		lcd.set_contrast(50)
+		
+		while True:
+			if refreshDisplay:
+				updateDisplay()
+			time.sleep(10)
+	except:
+		print('traceback.format_exc():\n%s',traceback.format_exc())
+		exit()
 
-	while (running):
-		if not doNotRefreshDisplay:
-			updateDisplay()
-		time.sleep(10)
-        
-except:
-	print('traceback.format_exc():\n%s',traceback.format_exc())
-	exit()
+if __name__ == "__main__":
+	main()

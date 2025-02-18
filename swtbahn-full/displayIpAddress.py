@@ -92,7 +92,7 @@ def switchToEduroam(channel, event):
 	time.sleep(2)
 	os.system("sudo wpa_supplicant -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf -B")
 	os.system("sudo dhclient wlan0")
-	RefreshDisplay = True
+	refreshDisplay = True
 	updateDisplay()
 
 @touch.on(touch.BUTTON)

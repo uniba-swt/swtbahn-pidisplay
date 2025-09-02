@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 import time
 import traceback
 import datetime
@@ -8,7 +7,7 @@ import signal
 
 import dothat.lcd as lcd
 import dothat.touch as touch
-import dothat.backlight as backlight
+#import dothat.backlight as backlight
 
 
 networkInterfaceIndex = 0
@@ -38,13 +37,13 @@ def updateDisplay():
 
 	if host_ip is None:
 		# No IP found
-		backlight.rgb(170, 170, 0)
+#		backlight.rgb(170, 170, 0)
 		
 		lcd.set_cursor_position(0, 0)
 		lcd.write("No IP address")
 	else:
 		# IP found
-		backlight.rgb(140, 170, 170)
+#		backlight.rgb(140, 170, 170)
 		
 		# Write IP Information
 		lcd.set_cursor_position(0,0)
@@ -56,26 +55,30 @@ def updateDisplay():
 		lcd.write(date_time)
 
 def blinkLed():
-	backlight.graph_set_led_duty(0, 1)
+	#backlight.graph_set_led_duty(0, 1)
 	
 	while True:
-		backlight.graph_set_led_state(0, 1)
+		#backlight.graph_set_led_state(0, 1)
 		time.sleep(0.5)
-		backlight.graph_set_led_state(0, 0)
+		#backlight.graph_set_led_state(0, 0)
 		time.sleep(0.5)
 
 # Display buttons
 @touch.on(touch.CANCEL)
 def handle_quit(channel, event):
-	backlight.off()
+	#backlight.off()
 	os.kill(os.getpid(), signal.SIGKILL)
+
+def changeInterface():
+        global networkInterfaceIndex
+        print("Hallo Bernhard")
+        networkInterfaceIndex += 1
+        updateDisplay()
 
 
 @touch.on(touch.UP)
-def changeInterface(channel, event):
-	global networkInterfaceIndex
-	networkInterfaceIndex += 1
-	updateDisplay()
+def touchUp(channel, event):
+	changeInterface()
 
 @touch.on(touch.DOWN)
 def switchToEduroam(channel, event):
@@ -98,7 +101,7 @@ def switchToEduroam(channel, event):
 @touch.on(touch.BUTTON)
 def handle_shutdown(channel, event):
 	lcd.clear()
-	backlight.rgb(170, 0, 0)
+	#backlight.rgb(170, 0, 0)
 	lcd.set_cursor_position(1, 1)
 	lcd.write("Shutting Down!")
 	os.system("sudo shutdown now")
@@ -106,13 +109,14 @@ def handle_shutdown(channel, event):
 # Main logic below
 def main():
 	try:
-		backlight.graph_off()
+		#backlight.graph_off()
 		lcd.set_contrast(50)
 		
 		while True:
 			if refreshDisplay:
 				updateDisplay()
 			time.sleep(10)
+			changeInterface()
 	except:
 		print('traceback.format_exc():\n%s',traceback.format_exc())
 		exit()

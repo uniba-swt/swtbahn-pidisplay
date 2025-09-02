@@ -1,0 +1,20 @@
+cap1xxx @ file:///home/pi/SWTbahn/swtbahn-pidisplay/swtbahn-full/cap1xxx
+certifi==2025.8.3
+charset-normalizer==3.4.3
+dot3k==2.0.3
+gpio==1.0.1
+gpiod==2.3.0
+gpiodevice==0.0.5
+idna==3.10
+ifaddr==0.2.0
+lgpio==0.2.2.0
+requests==2.32.5
+rpi-lgpio==0.6
+RPi.GPIO==0.7.1
+smbus2==0.5.0
+sn3218 @ file:///home/pi/SWTbahn/swtbahn-pidisplay/swtbahn-full/sn3218-python
+spi==0.2.0
+spidev==3.7
+st7036==1.4.4
+toml==0.10.2
+urllib3==2.5.0

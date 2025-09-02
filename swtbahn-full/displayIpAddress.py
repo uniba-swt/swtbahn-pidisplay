@@ -69,16 +69,16 @@ def handle_quit(channel, event):
 	#backlight.off()
 	os.kill(os.getpid(), signal.SIGKILL)
 
-def changeInterface():
-        global networkInterfaceIndex
-        print("Hallo Bernhard")
-        networkInterfaceIndex += 1
-        updateDisplay()
+def changeInterface(): 
+	global networkInterfaceIndex 
+	networkInterfaceIndex += 1
 
 
 @touch.on(touch.UP)
 def touchUp(channel, event):
 	changeInterface()
+	updateDisplay()
+
 
 @touch.on(touch.DOWN)
 def switchToEduroam(channel, event):

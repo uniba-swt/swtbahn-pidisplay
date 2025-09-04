@@ -1,5 +1,6 @@
 .DS_Store
-**/.venv
-**/.pythondeps
-**/.vscode
-**/.cache
+.venv*/
+.pythondeps/
+.vscode/
+.cache/
+.idea/

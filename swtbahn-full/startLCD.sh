@@ -1,1 +1,1 @@
-source /home/pi/SWTbahn/swtbahn-pidisplay/swtbahn-full/.venv/bin/activate && python3 /home/pi/SWTbahn/swtbahn-pidisplay/swtbahn-full/displayIpAddress.py
+source /home/pi/SWTbahn/swtbahn-pidisplay/swtbahn-full/.venv4/bin/activate && python3 /home/pi/SWTbahn/swtbahn-pidisplay/swtbahn-full/displayIpAddress.py

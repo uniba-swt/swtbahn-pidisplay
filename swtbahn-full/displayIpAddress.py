@@ -7,7 +7,7 @@ import signal
 
 import dothat.lcd as lcd
 import dothat.touch as touch
-#import dothat.backlight as backlight
+import dothat.backlight as backlight
 
 
 networkInterfaceIndex = 0
@@ -37,13 +37,13 @@ def updateDisplay():
 
 	if host_ip is None:
 		# No IP found
-#		backlight.rgb(170, 170, 0)
+		backlight.rgb(170, 170, 0)
 		
 		lcd.set_cursor_position(0, 0)
 		lcd.write("No IP address")
 	else:
 		# IP found
-#		backlight.rgb(140, 170, 170)
+		backlight.rgb(140, 170, 170)
 		
 		# Write IP Information
 		lcd.set_cursor_position(0,0)
@@ -55,27 +55,30 @@ def updateDisplay():
 		lcd.write(date_time)
 
 def blinkLed():
-	#backlight.graph_set_led_duty(0, 1)
-	
+	backlight.graph_set_led_duty(0, 1)
 	while True:
-		#backlight.graph_set_led_state(0, 1)
+		backlight.graph_set_led_state(0, 1)
 		time.sleep(0.5)
-		#backlight.graph_set_led_state(0, 0)
+		backlight.graph_set_led_state(0, 0)
 		time.sleep(0.5)
 
-# Display buttons
-@touch.on(touch.CANCEL)
-def handle_quit(channel, event):
-	#backlight.off()
-	os.kill(os.getpid(), signal.SIGKILL)
 
 def changeInterface(): 
 	global networkInterfaceIndex 
 	networkInterfaceIndex += 1
 
+# Display buttons
+@touch.on(touch.CANCEL)
+def handle_quit(channel, event):
+	print("Cancel button pressed")
+	backlight.off()
+	os.kill(os.getpid(), signal.SIGKILL)
+
+
 
 @touch.on(touch.UP)
 def touchUp(channel, event):
+	print("UP button pressed")
 	changeInterface()
 	updateDisplay()
 
@@ -83,6 +86,7 @@ def touchUp(channel, event):
 @touch.on(touch.DOWN)
 def switchToEduroam(channel, event):
 	global refreshDisplay
+	print("DOWN button pressed")
 	refreshDisplay = False
 	lcd.clear()
 	lcd.write("Switching to")
@@ -100,16 +104,17 @@ def switchToEduroam(channel, event):
 
 @touch.on(touch.BUTTON)
 def handle_shutdown(channel, event):
+	print("BUTTON (shutdown) button pressed")
 	lcd.clear()
-	#backlight.rgb(170, 0, 0)
+	backlight.rgb(170, 0, 0)
 	lcd.set_cursor_position(1, 1)
 	lcd.write("Shutting Down!")
-	os.system("sudo shutdown now")
+	os.system("sudo shutdown")
 
 # Main logic below
 def main():
 	try:
-		#backlight.graph_off()
+		backlight.graph_off()
 		lcd.set_contrast(50)
 		
 		while True:

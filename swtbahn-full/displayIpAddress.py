@@ -9,13 +9,14 @@ import dothat.lcd as lcd
 import dothat.touch as touch
 import dothat.backlight as backlight
 
-
 networkInterfaceIndex = 0
 refreshDisplay = True
 
-
 # Helper functions
 def updateDisplay():
+	global refreshDisplay
+	if not refreshDisplay:
+		return
 	lcd.clear()
 
 	# Collect IP information
@@ -51,17 +52,8 @@ def updateDisplay():
 		lcd.set_cursor_position(0,1)
 		lcd.write(host_ip)
 		lcd.set_cursor_position(0,2)
-		date_time = str(datetime.datetime.now())[:16] 
+		date_time = str(datetime.datetime.now())[:16]
 		lcd.write(date_time)
-
-def blinkLed():
-	backlight.graph_set_led_duty(0, 1)
-	while True:
-		backlight.graph_set_led_state(0, 1)
-		time.sleep(0.5)
-		backlight.graph_set_led_state(0, 0)
-		time.sleep(0.5)
-
 
 def changeInterface(): 
 	global networkInterfaceIndex 
@@ -74,14 +66,11 @@ def handle_quit(channel, event):
 	backlight.off()
 	os.kill(os.getpid(), signal.SIGKILL)
 
-
-
 @touch.on(touch.UP)
 def touchUp(channel, event):
 	print("UP button pressed")
 	changeInterface()
 	updateDisplay()
-
 
 @touch.on(touch.DOWN)
 def switchToEduroam(channel, event):
@@ -111,17 +100,27 @@ def handle_shutdown(channel, event):
 	lcd.write("Shutting Down!")
 	os.system("sudo shutdown")
 
+def handle_sig_end_display(signum, frame):
+	lcd.clear()
+	backlight.rgb(0, 0, 0)
+	print("Ending displayIpAddress.py")
+	exit()
+
 # Main logic below
 def main():
+	# Register Signal handler for SIGINT and SIGTERM, to shut down the
+	# LCD properly when receiving these signals
+	signal.signal(signal.SIGINT, handle_sig_end_display)
+	signal.signal(signal.SIGTERM, handle_sig_end_display)
+	# Main logic
 	try:
 		backlight.graph_off()
 		lcd.set_contrast(50)
-		
 		while True:
-			if refreshDisplay:
-				updateDisplay()
-			time.sleep(10)
+			# Every 10 seconds, switch display to next IP address
 			changeInterface()
+			updateDisplay()
+			time.sleep(10)
 	except:
 		print('traceback.format_exc():\n%s',traceback.format_exc())
 		exit()
